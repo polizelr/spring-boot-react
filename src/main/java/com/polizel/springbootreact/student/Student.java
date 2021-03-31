@@ -1,9 +1,24 @@
 package com.polizel.springbootreact.student;
 
+import javax.persistence.*;
+
+@Entity
+@Table
 public class Student {
+    @Id
+    @SequenceGenerator(
+            name="student_sequence",
+            sequenceName="student_sequence",
+            allocationSize = 1
+    )
+    @GeneratedValue(
+            generator = "student_sequence",
+            strategy = GenerationType.SEQUENCE
+    )
     private Long id;
     private String name;
     private String email;
+    @Enumerated(EnumType.STRING)
     private Gender gender;
 
     public Long getId(){
@@ -42,6 +57,12 @@ public class Student {
 
     public Student(Long id, String name, String email, Gender gender){
         this.id = id;
+        this.name = name;
+        this.email = email;
+        this.gender = gender;
+    }
+
+    public Student(String name, String email, Gender gender) {
         this.name = name;
         this.email = email;
         this.gender = gender;

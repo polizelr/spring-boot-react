@@ -1,5 +1,6 @@
 package com.polizel.springbootreact.student;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -12,24 +13,16 @@ import java.util.List;
 @RequestMapping("api/v1/students")
 public class StudentController {
 
+    private final StudentService studentService;
+
+    @Autowired
+    public StudentController(StudentService studentService){
+        this.studentService = studentService;
+    }
+
     @GetMapping
     public List<Student> getAllStudents(){
-        List<Student> students = Arrays.asList(
-                new Student(
-                        1L,
-                        "Jamila",
-                        "jamila@email.com",
-                        Gender.FEMALE
-                ),
-                new Student(
-                        2L,
-                        "Alex",
-                        "alex@email.com",
-                        Gender.MALE
-                )
-        );
-
-        return students;
+        return studentService.GetAllStudents();
     }
 
 }

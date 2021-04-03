@@ -1,7 +1,7 @@
 import './App.css';
 import {useState, useEffect} from 'react';
-import {getAllStudents} from "./client";
-import {Layout, Menu, Breadcrumb, Table, Spin, Empty, Button, Badge, Tag} from 'antd';
+import {getAllStudents, removeStudent} from "./client";
+import {Layout, Menu, Breadcrumb, Table, Spin, Empty, Button, Badge, Tag, Popconfirm, message} from 'antd';
 import {
     DesktopOutlined,
     PieChartOutlined,
@@ -13,23 +13,37 @@ import {
 } from '@ant-design/icons';
 import StudentDrawerForm from "./StudentDrawerForm";
 import Avatar from "antd/es/avatar/avatar";
+import {successNotification} from "./Notification";
 
 const {Header, Content, Footer, Sider} = Layout;
 const {SubMenu} = Menu;
 
 const TheAvatar = ({name}) => {
     let trim = name.trim();
-    if(trim.length === 0){
+    if (trim.length === 0) {
         return <Avatar icon={<UserOutlined/>}/>
     }
     const split = trim.split(" ");
-    if(split.length === 1){
+    if (split.length === 1) {
         return <Avatar>{name.charAt(0)}</Avatar>
     }
-    return <Avatar>{`${name.charAt(0)}${name.charAt(name.length-1)}`}</Avatar>
+    return <Avatar>{`${name.charAt(0)}${name.charAt(name.length - 1)}`}</Avatar>
 }
 
-const columns = [
+function confirm(studentId, fetchStudents) {
+    removeStudent(studentId)
+        .then(() => {
+            successNotification(
+                "Student deleted",
+                `Student with id ${studentId} was deleted`
+            );
+            fetchStudents();
+        }).catch(err => {
+        console.log(err);
+    })
+}
+
+const columns = fetchStudents => [
     {
         title: '',
         dataIndex: 'avatar',
@@ -55,6 +69,27 @@ const columns = [
         title: 'Gender',
         dataIndex: 'gender',
         key: 'gender',
+    },
+    {
+        title: 'Actions',
+        dataIndex: 'actions',
+        key: 'actions',
+        render: (text, student) => {
+            return (
+                <>
+                    <Popconfirm
+                        placement="topRight"
+                        title={`Are you sure to delete ${student.name}?`}
+                        onConfirm={() => confirm(student.id, fetchStudents)}
+                        okText="Yes"
+                        cancelText="No"
+                    >
+                        <Button>Delete</Button>
+                    </Popconfirm>
+                    <Button>Edit</Button>
+                </>
+            );
+        }
     },
 ];
 
@@ -96,16 +131,17 @@ function App() {
             />
             <Table
                 dataSource={students}
-                columns={columns}
+                columns={columns(fetchStudents)}
                 bordered
                 title={() =>
                     <>
 
 
                         <Tag style={{marginLeft: "10px"}}>Number of students</Tag>
-                        <Badge count={students.length} className="site-badge-count-4" />
+                        <Badge count={students.length} className="site-badge-count-4"/>
                         <br/><br/>
-                        <Button type="primary" shape="round" icon={<PlusOutlined />} size="medium" onClick={() => setShowDrawer(!showDrawer)}>
+                        <Button type="primary" shape="round" icon={<PlusOutlined/>} size="medium"
+                                onClick={() => setShowDrawer(!showDrawer)}>
                             Add new Student
                         </Button>
                     </>

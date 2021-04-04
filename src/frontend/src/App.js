@@ -1,7 +1,7 @@
 import './App.css';
 import {useState, useEffect} from 'react';
 import {getAllStudents, removeStudent} from "./client";
-import {Layout, Menu, Breadcrumb, Table, Spin, Empty, Button, Badge, Tag, Popconfirm, message} from 'antd';
+import {Layout, Menu, Breadcrumb, Table, Spin, Empty, Button, Badge, Tag, Popconfirm} from 'antd';
 import {
     DesktopOutlined,
     PieChartOutlined,
@@ -39,13 +39,13 @@ function confirm(studentId, fetchStudents) {
             );
             fetchStudents();
         }).catch(err => {
-            err.response.json().then(res => {
-                console.log(res);
-                errorNotification(
-                    "There was an issue",
-                    `${res.message} [${res.status}] [${res.error}]`)
-            });
-        })
+        err.response.json().then(res => {
+            console.log(res);
+            errorNotification(
+                "There was an issue",
+                `${res.message} [${res.status}] [${res.error}]`)
+        });
+    })
 }
 
 const columns = fetchStudents => [
@@ -134,7 +134,18 @@ function App() {
             return <Spin indicator={antIcon}/>
         }
         if (students.length <= 0) {
-            return <Empty/>;
+            return <>
+                <Button type="primary" shape="round" icon={<PlusOutlined/>} size="medium"
+                        onClick={() => setShowDrawer(!showDrawer)}>
+                    Add new Student
+                </Button>
+                <StudentDrawerForm
+                    showDrawer={showDrawer}
+                    setShowDrawer={setShowDrawer}
+                    fetchStudents={fetchStudents}
+                />
+                <Empty/>
+            </>
         }
 
         return <>

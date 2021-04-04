@@ -1,6 +1,9 @@
 package com.polizel.springbootreact.student;
 
 import javax.persistence.*;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 @Entity
 @Table
@@ -16,8 +19,11 @@ public class Student {
             strategy = GenerationType.SEQUENCE
     )
     private Long id;
+    @NotBlank
     private String name;
+    @Email
     private String email;
+    @NotNull
     @Enumerated(EnumType.STRING)
     private Gender gender;
 

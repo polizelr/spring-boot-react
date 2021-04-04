@@ -1,6 +1,6 @@
 import {Drawer, Input, Col, Select, Form, Row, Button, Spin} from 'antd';
 
-import { addNewStudent } from "./client";
+import {addNewStudent} from "./client";
 import {LoadingOutlined} from "@ant-design/icons";
 import {useState} from "react";
 
@@ -8,7 +8,7 @@ import {successNotification, errorNotification} from "./Notification";
 
 const {Option} = Select;
 
-const antIcon = <LoadingOutlined style={{ fontSize: 24 }} spin />;
+const antIcon = <LoadingOutlined style={{fontSize: 24}} spin/>;
 
 function StudentDrawerForm({showDrawer, setShowDrawer, fetchStudents}) {
     const onCLose = () => setShowDrawer(false);
@@ -18,7 +18,7 @@ function StudentDrawerForm({showDrawer, setShowDrawer, fetchStudents}) {
         setSubmitting(true);
         console.log(JSON.stringify(student, null, 2));
         addNewStudent(student)
-            .then(()=>{
+            .then(() => {
                 console.log("student added");
                 onCLose();
                 successNotification(
@@ -28,9 +28,16 @@ function StudentDrawerForm({showDrawer, setShowDrawer, fetchStudents}) {
                 fetchStudents();
             }).catch(err => {
                 console.log(err);
-            }).finally(()=>{
+                err.response.json().then(res => {
+                    console.log(res);
+                    errorNotification(
+                        "There was an issue",
+                        `${res.message} [${res.status}] [${res.error}]`,
+                        "bottomLeft");
+                });
+            }).finally(() => {
                 setSubmitting(false);
-        })
+            })
     };
 
     const onFinishFailed = errorInfo => {
@@ -96,7 +103,7 @@ function StudentDrawerForm({showDrawer, setShowDrawer, fetchStudents}) {
             </Row>
             <Row>
                 <Col span={12}>
-                    <Form.Item >
+                    <Form.Item>
                         <Button type="primary" htmlType="submit">
                             Submit
                         </Button>
@@ -104,7 +111,7 @@ function StudentDrawerForm({showDrawer, setShowDrawer, fetchStudents}) {
                 </Col>
             </Row>
             <Row>
-                {submitting && <Spin indicator={antIcon} />}
+                {submitting && <Spin indicator={antIcon}/>}
             </Row>
         </Form>
     </Drawer>

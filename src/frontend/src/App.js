@@ -13,7 +13,7 @@ import {
 } from '@ant-design/icons';
 import StudentDrawerForm from "./StudentDrawerForm";
 import Avatar from "antd/es/avatar/avatar";
-import {successNotification} from "./Notification";
+import {errorNotification, successNotification} from "./Notification";
 
 const {Header, Content, Footer, Sider} = Layout;
 const {SubMenu} = Menu;
@@ -31,7 +31,7 @@ const TheAvatar = ({name}) => {
 }
 
 function confirm(studentId, fetchStudents) {
-    removeStudent(studentId)
+    removeStudent(156151)
         .then(() => {
             successNotification(
                 "Student deleted",
@@ -39,8 +39,13 @@ function confirm(studentId, fetchStudents) {
             );
             fetchStudents();
         }).catch(err => {
-        console.log(err);
-    })
+            err.response.json().then(res => {
+                console.log(res);
+                errorNotification(
+                    "There was an issue",
+                    `${res.message} [${res.status}] [${res.error}]`)
+            });
+        })
 }
 
 const columns = fetchStudents => [
@@ -106,9 +111,18 @@ function App() {
             .then(res => res.json())
             .then(res => {
                     setStudents(res)
-                    setFetching(false)
                 }
-            );
+            )
+            .catch(err => {
+                console.log(err.response)
+                err.response.json().then(res => {
+                    console.log(res);
+                    errorNotification(
+                        "There was an issue",
+                        `${res.message} [${res.status}] [${res.error}]`)
+                });
+            })
+            .finally(() => setFetching(false));
 
 
     useEffect(() => {
